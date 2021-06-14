@@ -26,18 +26,31 @@ eda.nu <- summary(mydata[, c(3:12)])
 xtable(eda.nu)
 
 #graphical_univariate_eda
-par(mfrow=c(3,3))
-plot(density(mydata$Pillar.Depth), main="Pillar.Depth", xlab="")
-plot(density(mydata$Pillar.Height), main="Pillar.Height")
-plot(density(mydata$Pillar.Width), main="Pillar.Width")
-plot(density(mydata$`Width/Height`), main="Width/Height")
-plot(density(mydata$Roadway.width), main="Roadway.width")
-plot(density(mydata$Uniaxial_compression.strength), main="Uniaxial_compression.strength")
-plot(density(mydata$Pillar.Strength), main="Pillar.Strength")
-plot(density(mydata$Pillar.Stress), main="Pillar.Stress")
-plot(density(mydata$`Strength/Stress`), main="Strength/Stress")
+names(mydata) <- c("Pillar.ID",
+                   "Mine.Seam",
+                   "Pillar.Depth",
+                   "Pillar.Height",
+                   "Pillar.Width",
+                   "Width/Height",
+                   "Roadway.width",
+                   "Uniaxial_compression.strength",
+                   "Pillar.Strength",
+                   "Pillar.Stress",
+                   "Strength/Stress",
+                   "Pillar.Stability")
 
-#numcerical_bivariate_eda
+par(mfrow=c(3,3))
+plot(density(mydata$Pillar.Depth), main="(1)", xlab="")
+plot(density(mydata$Pillar.Height), main="(2)")
+plot(density(mydata$Pillar.Width), main="(3)")
+plot(density(mydata$`Width/Height`), main="(4)")
+plot(density(mydata$Roadway.width), main="(5)")
+plot(density(mydata$Uniaxial_compression.strength), main="(6)")
+plot(density(mydata$Pillar.Strength), main="(7)")
+plot(density(mydata$Pillar.Stress), main="(8)")
+plot(density(mydata$`Strength/Stress`), main="(9)")
+
+#numerical_bivariate_eda
 
 #graphical_bivariate_eda
 mydata$Pillar.Stability <- factor(mydata$Pillar.Stability)
