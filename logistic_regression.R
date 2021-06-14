@@ -1,6 +1,8 @@
 #installing and importing packages
 #install.packages("xtable")
+#install.packages("car")
 library(xtable)
+library(car)
 
 #importing data
 file <- "data/pillar_data.dat"
@@ -81,6 +83,9 @@ mylogit <- glm(Pillar.Stability ~
                                `Strength/Stress`, data = mydata, family = "binomial")
 
 summary(mylogit)
+
+#Checking for multicollinearity
+vif(mylogit)
 
 #Goodness of fit
 1 - pchisq(q=mylogit$null.deviance - mylogit$deviance, df=length(coef(mylogit)))
