@@ -1,24 +1,31 @@
+#installing and importing packages
+#install.packages("xtable")
+library(xtable)
+
 #importing data
 file <- "data/pillar_data.dat"
 mydata <- read.csv(file, sep = '', header = FALSE)
 names(mydata) <- c("Pillar.ID",
                  "Mine.Seam",
-                 "Pillar.Depth",
-                 "Pillar.Height",
-                 "Pillar.Width",
-                 "Width/Height",
-                 "Roadway.width",
-                 "Uniaxial_compression.strength",
-                 "Pillar.Strength",
-                 "Pillar.Stress",
-                 "Strength/Stress",
-                 "Pillar.Stability")
+                 "(1)",
+                 "(2)",
+                 "(3)",
+                 "(4)",
+                 "(5)",
+                 "(6)",
+                 "(7)",
+                 "(8)",
+                 "(9)",
+                 "(10)")
 
 #balance of samples
 prop.table(table(mydata$Pillar.Stability))
 
-#EDA_univariate
-summary(mydata)
+#numerical_univariate_eda
+eda.nu <- summary(mydata[, c(3:12)])
+xtable(eda.nu)
+
+#graphical_univariate_eda
 par(mfrow=c(3,3))
 plot(density(mydata$Pillar.Depth), main="Pillar.Depth", xlab="")
 plot(density(mydata$Pillar.Height), main="Pillar.Height")
@@ -30,7 +37,9 @@ plot(density(mydata$Pillar.Strength), main="Pillar.Strength")
 plot(density(mydata$Pillar.Stress), main="Pillar.Stress")
 plot(density(mydata$`Strength/Stress`), main="Strength/Stress")
 
-#EDA_bivariate
+#numcerical_bivariate_eda
+
+#graphical_bivariate_eda
 mydata$Pillar.Stability <- factor(mydata$Pillar.Stability)
 
 par(mfrow=c(3,3))
