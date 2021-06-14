@@ -41,16 +41,24 @@ names(mydata) <- c("Pillar.ID",
 
 par(mfrow=c(3,3))
 plot(density(mydata$Pillar.Depth), main="(1)", xlab="")
-plot(density(mydata$Pillar.Height), main="(2)", xlab="")
-plot(density(mydata$Pillar.Width), main="(3)", xlab="")
+plot(density(mydata$Pillar.Height), main="(2)", xlab="", ylab="")
+plot(density(mydata$Pillar.Width), main="(3)", xlab="", ylab="")
 plot(density(mydata$`Width/Height`), main="(4)", xlab="")
-plot(density(mydata$Roadway.width), main="(5)", xlab="")
-plot(density(mydata$Uniaxial_compression.strength), main="(6)", xlab="")
+plot(density(mydata$Roadway.width), main="(5)", xlab="", ylab="")
+plot(density(mydata$Uniaxial_compression.strength), main="(6)", xlab="", ylab="")
 plot(density(mydata$Pillar.Strength), main="(7)", xlab="")
-plot(density(mydata$Pillar.Stress), main="(8)", xlab="")
-plot(density(mydata$`Strength/Stress`), main="(9)", xlab="")
+plot(density(mydata$Pillar.Stress), main="(8)", xlab="", ylab="")
+plot(density(mydata$`Strength/Stress`), main="(9)", xlab="", ylab="")
+
+#---No outliers
+par(mfrow=c(1,2))
+boxplot(mydata$`Width/Height`, main="(4)")
+boxplot(mydata$`Strength/Stress`, main="(9)")
 
 #numerical_bivariate_eda
+eda.nb <- cor(mydata[, c(3:11)])
+xtable(eda.nb)
+
 
 #graphical_bivariate_eda
 mydata$Pillar.Stability <- factor(mydata$Pillar.Stability)
