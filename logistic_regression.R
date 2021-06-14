@@ -41,14 +41,14 @@ names(mydata) <- c("Pillar.ID",
 
 par(mfrow=c(3,3))
 plot(density(mydata$Pillar.Depth), main="(1)", xlab="")
-plot(density(mydata$Pillar.Height), main="(2)")
-plot(density(mydata$Pillar.Width), main="(3)")
-plot(density(mydata$`Width/Height`), main="(4)")
-plot(density(mydata$Roadway.width), main="(5)")
-plot(density(mydata$Uniaxial_compression.strength), main="(6)")
-plot(density(mydata$Pillar.Strength), main="(7)")
-plot(density(mydata$Pillar.Stress), main="(8)")
-plot(density(mydata$`Strength/Stress`), main="(9)")
+plot(density(mydata$Pillar.Height), main="(2)", xlab="")
+plot(density(mydata$Pillar.Width), main="(3)", xlab="")
+plot(density(mydata$`Width/Height`), main="(4)", xlab="")
+plot(density(mydata$Roadway.width), main="(5)", xlab="")
+plot(density(mydata$Uniaxial_compression.strength), main="(6)", xlab="")
+plot(density(mydata$Pillar.Strength), main="(7)", xlab="")
+plot(density(mydata$Pillar.Stress), main="(8)", xlab="")
+plot(density(mydata$`Strength/Stress`), main="(9)", xlab="")
 
 #numerical_bivariate_eda
 
