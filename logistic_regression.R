@@ -20,9 +20,6 @@ names(mydata) <- c("Pillar.ID",
                  "(9)",
                  "(10)")
 
-#balance of samples
-prop.table(table(mydata$Pillar.Stability))
-
 #numerical_univariate_eda
 eda.nu <- summary(mydata[, c(3:12)])
 xtable(eda.nu)
@@ -52,6 +49,9 @@ plot(density(mydata$Pillar.Strength), main="(7)", xlab="")
 plot(density(mydata$Pillar.Stress), main="(8)", xlab="", ylab="")
 plot(density(mydata$`Strength/Stress`), main="(9)", xlab="", ylab="")
 
+#balance of samples
+prop.table(table(mydata$Pillar.Stability))
+
 #---No outliers
 par(mfrow=c(1,2))
 boxplot(mydata$`Width/Height`, main="(4)")
@@ -76,13 +76,14 @@ cdplot(Pillar.Stability ~ Pillar.Strength, data = mydata, main ="(7)")
 cdplot(Pillar.Stability ~ Pillar.Stress, data = mydata, main="(8)", ylab = "")
 cdplot(Pillar.Stability ~ `Strength/Stress`, data = mydata, main ="(9)", ylab = "")
 
-
+#---------------------------------------------------------------------------------
 #fitting the model - 2 variables
 mylogit <- glm(Pillar.Stability ~
                                `Width/Height` +
                                `Strength/Stress`, data = mydata, family = "binomial")
 
 summary(mylogit)
+xtable(mylogit)
 
 #Checking for multicollinearity
 vif(mylogit)
@@ -92,7 +93,15 @@ vif(mylogit)
 #The resulting p-value is so small very close to 0, so we can reject 
 #the null hypothesis that neither variables are related to y.
 
-drop1(mylogit, test='Chisq')
+lrt <- drop1(mylogit, test='Chisq')
+xtable(lrt)
+lrt
 #Both rows for the independent variables are highly significant, suggesting that 
 #each value, by itself, has a relationship with the response variable 
 #(which we know is correct).
+
+#Error rate
+y <- mydata$Pillar.Stability
+y_hat <- predict(mylogit, type='response')
+mean((y_hat >= 0.5 & y==0) | (y_hat < 0.5 & y==1))
+1 - max(prop.table(table(y)))
