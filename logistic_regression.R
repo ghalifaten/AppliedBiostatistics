@@ -3,10 +3,13 @@
 #install.packages("car")
 library(xtable)
 library(car)
+library(MASS)
 
 #importing data
 file <- "data/pillar_data.dat"
 mydata <- read.csv(file, sep = '', header = FALSE)
+
+#-------------------------------DATA EXPLORATION--------------------------------
 names(mydata) <- c("Pillar.ID",
                  "Mine.Seam",
                  "(1)",
@@ -23,6 +26,10 @@ names(mydata) <- c("Pillar.ID",
 #numerical_univariate_eda
 eda.nu <- summary(mydata[, c(3:12)])
 xtable(eda.nu)
+
+#numerical_bivariate_eda
+eda.nb <- cor(mydata[, c(3:11)])
+xtable(eda.nb)
 
 #graphical_univariate_eda
 names(mydata) <- c("Pillar.ID",
@@ -49,18 +56,6 @@ plot(density(mydata$Pillar.Strength), main="(7)", xlab="")
 plot(density(mydata$Pillar.Stress), main="(8)", xlab="", ylab="")
 plot(density(mydata$`Strength/Stress`), main="(9)", xlab="", ylab="")
 
-#balance of samples
-prop.table(table(mydata$Pillar.Stability))
-
-#---No outliers
-par(mfrow=c(1,2))
-boxplot(mydata$`Width/Height`, main="(4)")
-boxplot(mydata$`Strength/Stress`, main="(9)")
-
-#numerical_bivariate_eda
-eda.nb <- cor(mydata[, c(3:11)])
-xtable(eda.nb)
-
 
 #graphical_bivariate_eda
 mydata$Pillar.Stability <- factor(mydata$Pillar.Stability)
@@ -76,32 +71,59 @@ cdplot(Pillar.Stability ~ Pillar.Strength, data = mydata, main ="(7)")
 cdplot(Pillar.Stability ~ Pillar.Stress, data = mydata, main="(8)", ylab = "")
 cdplot(Pillar.Stability ~ `Strength/Stress`, data = mydata, main ="(9)", ylab = "")
 
-#---------------------------------------------------------------------------------
-#fitting the model - 2 variables
-mylogit <- glm(Pillar.Stability ~
+#balance of samples
+prop.table(table(mydata$Pillar.Stability))
+
+#---No outliers
+par(mfrow=c(1,2))
+boxplot(mydata$`Width/Height`, main="(4)")
+boxplot(mydata$`Strength/Stress`, main="(9)")
+
+#--------------------------FITTING MODELS, STEPWISE-----------------------------
+full <- glm(Pillar.Stability ~
+               `Width/Height` *
+               `Strength/Stress`, data = mydata, family = "binomial")
+
+basic <- glm(Pillar.Stability ~ 1, data = mydata, family = "binomial")
+
+best1 <- stepAIC(basic, test="F", scope=~`Width/Height`*`Strength/Stress`)
+
+best2 <- stepAIC(full, test="F", scope=~`Width/Height`*`Strength/Stress`)
+
+#--------------------------ASSESSING MODELS, MULTICOLLINEARITY--------------------
+#basic
+basic <- glm(Pillar.Stability ~ 1, data = mydata, family = "binomial")
+vif(basic) #model contains fewer than 2 terms
+
+#1 variable, width/height
+m_one_wh <- glm(Pillar.Stability ~
+                  `Width/Height`, data = mydata, family = "binomial")
+vif(m_one_wh) #model contains fewer than 2 terms
+
+#1 variable, strength/stress
+m_one_ss <- glm(Pillar.Stability ~ 
+                  `Strength/Stress`, data = mydata, family = "binomial")
+
+vif(m_one_ss) #model contains fewer than 2 terms
+
+#2 variables, no interaction
+m_two <- glm(Pillar.Stability ~
                                `Width/Height` +
                                `Strength/Stress`, data = mydata, family = "binomial")
+vif(m_two)
 
-summary(mylogit)
-xtable(mylogit)
+#full
+full <- glm(Pillar.Stability ~
+              `Width/Height` *
+              `Strength/Stress`, data = mydata, family = "binomial")
+vif(full)
 
-#Checking for multicollinearity
-vif(mylogit)
+#---------------------ASSESSING MODEL, Likelihood Ratio Test--------------------
+drop1(m_two, test='Chisq')
 
-#Goodness of fit
-1 - pchisq(q=mylogit$null.deviance - mylogit$deviance, df=length(coef(mylogit)))
-#The resulting p-value is so small very close to 0, so we can reject 
-#the null hypothesis that neither variables are related to y.
+#---------------------ASSESSING MODEL, Cook's distance--------------------------
+par(mfrow=c(2,1))
+plot(m_two, which = (2))
+plot(m_two, which = (4))
 
-lrt <- drop1(mylogit, test='Chisq')
-xtable(lrt)
-lrt
-#Both rows for the independent variables are highly significant, suggesting that 
-#each value, by itself, has a relationship with the response variable 
-#(which we know is correct).
 
-#Error rate
-y <- mydata$Pillar.Stability
-y_hat <- predict(mylogit, type='response')
-mean((y_hat >= 0.5 & y==0) | (y_hat < 0.5 & y==1))
-1 - max(prop.table(table(y)))
